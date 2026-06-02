@@ -12,34 +12,26 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#09090e">
 
-<!-- Icon + Manifest generated at runtime (works from file://) -->
+<!-- Icon + Manifest generated at runtime -->
 <script>
 (function(){
-  // Draw app icon on canvas
   const c = document.createElement('canvas');
   c.width = c.height = 192;
   const x = c.getContext('2d');
-  // Background
   x.fillStyle = '#09090e';
-  x.roundRect(0,0,192,192,36);
+  if (x.roundRect) { x.roundRect(0,0,192,192,36); } else { x.rect(0,0,192,192); }
   x.fill();
-  // Gold circle
   x.fillStyle = '#c9a84c';
   x.beginPath(); x.arc(96,100,58,0,Math.PI*2); x.fill();
-  // Dark ৳ symbol
   x.fillStyle = '#09090e';
   x.font = 'bold 72px Georgia, serif';
   x.textAlign = 'center';
   x.textBaseline = 'middle';
   x.fillText('৳', 96, 102);
   const icon = c.toDataURL('image/png');
-
-  // Inject apple-touch-icon
   const lnk = document.createElement('link');
   lnk.rel = 'apple-touch-icon'; lnk.href = icon;
   document.head.appendChild(lnk);
-
-  // Inject web manifest (enables "Add to Home Screen" prompt on Android too)
   const manifest = JSON.stringify({
     name:'Finance Dashboard', short_name:'Finance',
     start_url:'.', display:'standalone',
@@ -64,16 +56,12 @@
   --border2: #35354a;
   --gold: #c9a84c;
   --gold-dim: #9a7e38;
-  --gold-light: #e8c878;
-  --gold-bg: rgba(201,168,76,0.08);
   --green: #3dd68c;
   --green-dim: rgba(61,214,140,0.12);
   --red: #f46a6a;
   --red-dim: rgba(244,106,106,0.12);
   --blue: #5badff;
   --blue-dim: rgba(91,173,255,0.12);
-  --purple: #a78bfa;
-  --amber: #fbbf24;
   --text: #e2e2ee;
   --text2: #8080a0;
   --text3: #45455a;
@@ -87,43 +75,36 @@
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html, body { height:100%; overflow:hidden; background:var(--bg); }
+html { padding-top: env(safe-area-inset-top, 0); }
 body { font-family:var(--font-body); font-size:14px; color:var(--text); line-height:1.5; }
 
-/* ─── Layout ─────────────────────────────────────── */
 #app { height:100vh; display:flex; flex-direction:column; position:relative; }
 #content { flex:1; overflow-y:auto; overflow-x:hidden; padding-bottom:calc(var(--nav-h) + 20px); -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
 #content::-webkit-scrollbar { width:3px; }
 #content::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
 
-/* ─── Bottom Nav ─────────────────────────────────── */
 #nav { position:fixed; bottom:0; left:0; right:0; height:var(--nav-h); background:var(--surface); border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom,0); }
-html { padding-top: env(safe-area-inset-top, 0); }
 .nb { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:none; border:none; color:var(--text3); cursor:pointer; font-family:var(--font-body); font-size:9.5px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; transition:color 0.2s; padding:6px 4px; }
 .nb svg { width:19px; height:19px; stroke-width:1.5; transition:stroke 0.2s; }
 .nb.active { color:var(--gold); }
 
-/* ─── Sections ───────────────────────────────────── */
 .sec { display:none; animation:fadeIn 0.2s ease; }
 .sec.active { display:block; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
 
-/* ─── Page Header ─────────────────────────────────── */
 .ph { padding:22px 18px 10px; display:flex; align-items:flex-end; justify-content:space-between; }
 .ph-eyebrow { font-size:9px; text-transform:uppercase; letter-spacing:0.16em; color:var(--text3); font-weight:700; margin-bottom:3px; }
 .ph-title { font-family:var(--font-display); font-size:30px; font-weight:600; color:var(--text); letter-spacing:-0.02em; line-height:1; }
 .ph-right { text-align:right; font-size:11px; color:var(--text3); }
 
-/* ─── Month Nav ───────────────────────────────────── */
 .mnav { display:flex; align-items:center; gap:10px; padding:8px 18px 18px; }
 .mnav-btn { width:30px; height:30px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--text2); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
 .mnav-btn:active { background:var(--surface3); }
 .mnav-btn svg { width:14px; height:14px; }
 .mlabel { font-family:var(--font-mono); font-size:12px; color:var(--gold); letter-spacing:0.06em; flex:1; text-align:center; }
 
-/* ─── Summary Cards ───────────────────────────────── */
 .cgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 18px 18px; }
 .ccard { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:14px; position:relative; overflow:hidden; }
-.ccard::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; }
 .ccard-inc { border-top:2px solid var(--green); }
 .ccard-exp { border-top:2px solid var(--red); }
 .ccard-bal { border-top:2px solid var(--gold); }
@@ -136,10 +117,8 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .ccard-bal .ca { color:var(--gold); }
 .ccard-sav .ca { color:var(--blue); }
 
-/* ─── Section Label ───────────────────────────────── */
 .sl { font-size:9px; text-transform:uppercase; letter-spacing:0.15em; color:var(--text3); font-weight:700; padding:0 18px 10px; }
 
-/* ─── Account Bars ────────────────────────────────── */
 .acbars { padding:0 18px 18px; display:flex; flex-direction:column; gap:8px; }
 .acbar { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-sm); padding:12px 14px; display:flex; align-items:center; gap:12px; }
 .acdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
@@ -148,7 +127,6 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .actype { font-size:10px; color:var(--text3); }
 .acamt { font-family:var(--font-mono); font-size:14px; font-weight:500; }
 
-/* Account color tokens */
 .d-sc  { background:#4a9eff; } .a-sc  { color:#4a9eff; }
 .d-cty { background:#ff7055; } .a-cty { color:#ff7055; }
 .d-brc { background:#3dd68c; } .a-brc { color:#3dd68c; }
@@ -156,7 +134,6 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .d-amx { background:#fbbf24; } .a-amx { color:#fbbf24; }
 .d-csh { background:#8080a0; } .a-csh { color:#8080a0; }
 
-/* ─── Chart Bars ──────────────────────────────────── */
 .cbars { padding:0 18px 18px; display:flex; flex-direction:column; gap:7px; }
 .cbrow { display:flex; align-items:center; gap:10px; }
 .cblbl { font-size:10px; color:var(--text3); width:90px; flex-shrink:0; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -164,7 +141,6 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .cbfill { height:100%; border-radius:100px; transition:width 0.5s ease; }
 .cbval { font-family:var(--font-mono); font-size:10px; color:var(--text2); width:72px; flex-shrink:0; text-align:right; }
 
-/* ─── Recent Tx ───────────────────────────────────── */
 .txlist { padding:0 18px 18px; }
 .txitem { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--border); }
 .txitem:last-child { border-bottom:none; }
@@ -175,8 +151,8 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .txamt { font-family:var(--font-mono); font-size:14px; font-weight:600; text-align:right; flex-shrink:0; }
 .txamt.inc { color:var(--green); }
 .txamt.exp { color:var(--red); }
+.txamt.pay { color:var(--blue); }
 
-/* ─── Forms ───────────────────────────────────────── */
 .fwrap { padding:0 18px 14px; }
 .fg { margin-bottom:13px; }
 .fl { display:block; font-size:9px; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); font-weight:700; margin-bottom:6px; }
@@ -189,7 +165,6 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .btn-add:active { opacity:0.85; transform:scale(0.99); }
 .btn-del { padding:5px 10px; background:var(--red-dim); color:var(--red); border:1px solid rgba(244,106,106,0.25); border-radius:5px; font-size:11px; cursor:pointer; font-family:var(--font-body); font-weight:500; white-space:nowrap; }
 
-/* ─── Entries ─────────────────────────────────────── */
 .elist { padding:0 18px 18px; display:flex; flex-direction:column; gap:8px; }
 .eitem { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-sm); padding:13px; display:flex; align-items:flex-start; gap:12px; }
 .emain { flex:1; min-width:0; }
@@ -200,12 +175,10 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .eamt.inc { color:var(--green); }
 .eamt.exp { color:var(--red); }
 
-/* ─── Total row ───────────────────────────────────── */
 .trow { display:flex; justify-content:space-between; align-items:center; padding:11px 16px; background:var(--surface2); margin:0 18px 16px; border-radius:var(--r-sm); border:1px solid var(--border); }
 .tlbl { font-size:9px; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); font-weight:700; }
 .tval { font-family:var(--font-mono); font-size:15px; font-weight:600; }
 
-/* ─── Account Detail Cards ────────────────────────── */
 .accard { margin:0 18px 10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:16px; }
 .accard-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
 .accard-name { font-size:15px; font-weight:600; color:var(--text); margin-bottom:2px; }
@@ -216,7 +189,22 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .acstat-lbl { font-size:9px; text-transform:uppercase; letter-spacing:0.11em; color:var(--text3); font-weight:700; margin-bottom:4px; }
 .acstat-val { font-family:var(--font-mono); font-size:14px; font-weight:600; }
 
-/* ─── 6-Month Chart ───────────────────────────────── */
+/* Credit card balance */
+.cc-balance { text-align:center; padding:8px 0 14px; }
+.cc-balance-lbl { font-size:9px; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); font-weight:700; margin-bottom:5px; }
+.cc-balance-val { font-family:var(--font-mono); font-size:27px; font-weight:600; letter-spacing:-0.02em; line-height:1; }
+.cc-balance-note { font-size:10px; color:var(--text3); margin-top:5px; }
+
+.btn-pay { width:100%; margin-top:10px; padding:11px; background:var(--green-dim); color:var(--green); border:1px solid rgba(61,214,140,0.3); border-radius:var(--r-sm); font-family:var(--font-body); font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+.btn-pay:active { opacity:0.85; transform:scale(0.99); }
+
+.pay-hist { margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
+.pay-hist-lbl { font-size:9px; text-transform:uppercase; letter-spacing:0.12em; color:var(--text3); font-weight:700; margin-bottom:8px; }
+.pay-row { display:flex; align-items:center; gap:8px; padding:6px 0; font-size:12px; }
+.pay-row-info { flex:1; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pay-row-amt { font-family:var(--font-mono); color:var(--green); font-weight:500; flex-shrink:0; }
+.pay-row-del { padding:3px 7px; background:var(--red-dim); color:var(--red); border:1px solid rgba(244,106,106,0.25); border-radius:5px; font-size:10px; cursor:pointer; font-family:var(--font-body); flex-shrink:0; }
+
 .mochrt { padding:0 18px 18px; display:flex; align-items:flex-end; gap:5px; height:110px; }
 .mocol { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height:100%; }
 .mobars { flex:1; width:100%; display:flex; gap:2px; align-items:flex-end; }
@@ -225,31 +213,31 @@ html { padding-top: env(safe-area-inset-top, 0); }
 .mobar.e { background:var(--red); opacity:0.65; }
 .molbl { font-size:9px; color:var(--text3); font-family:var(--font-mono); }
 
-/* ─── Divider ─────────────────────────────────────── */
 .div { height:1px; background:var(--border); margin:0 18px 18px; }
 
-/* ─── Empty state ─────────────────────────────────── */
 .empty { text-align:center; padding:36px 20px; color:var(--text3); }
 .empty-ico { font-size:28px; margin-bottom:10px; }
 .empty-txt { font-size:12px; line-height:1.7; }
 
-/* ─── Toast ───────────────────────────────────────── */
 #toast { position:fixed; bottom:calc(var(--nav-h) + 14px); left:50%; transform:translateX(-50%) translateY(14px); background:var(--surface3); color:var(--text); padding:9px 18px; border-radius:100px; font-size:12px; font-weight:500; border:1px solid var(--border2); z-index:999; opacity:0; transition:all 0.25s; pointer-events:none; white-space:nowrap; }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ─── Confirm Modal ───────────────────────────────── */
-#modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; align-items:flex-end; }
-#modal-overlay.open { display:flex; }
-#modal-box { background:var(--surface); border-top:1px solid var(--border); border-radius:16px 16px 0 0; padding:24px 20px 36px; width:100%; }
+/* Modals (confirm + payment) */
+#modal-overlay, #pay-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; align-items:flex-end; }
+#modal-overlay.open, #pay-overlay.open { display:flex; }
+#modal-box, #pay-box { background:var(--surface); border-top:1px solid var(--border); border-radius:16px 16px 0 0; padding:24px 20px 36px; width:100%; max-height:92vh; overflow-y:auto; }
 #modal-title { font-size:15px; font-weight:600; margin-bottom:6px; }
 #modal-msg { font-size:13px; color:var(--text2); margin-bottom:20px; }
-.modal-btns { display:flex; gap:10px; }
+.modal-btns { display:flex; gap:10px; margin-top:6px; }
 .modal-cancel { flex:1; padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r-sm); color:var(--text2); font-family:var(--font-body); font-size:13px; font-weight:600; cursor:pointer; }
 .modal-confirm { flex:1; padding:12px; background:var(--red-dim); border:1px solid rgba(244,106,106,0.3); border-radius:var(--r-sm); color:var(--red); font-family:var(--font-body); font-size:13px; font-weight:600; cursor:pointer; }
+.pay-modal-title { font-size:19px; font-weight:600; margin-bottom:4px; font-family:var(--font-display); }
+.pay-modal-bal { font-size:12px; color:var(--text2); margin-bottom:18px; }
 
-/* ─── Responsive ──────────────────────────────────── */
 @media (min-width:600px) {
   #app { max-width:460px; margin:0 auto; border-left:1px solid var(--border); border-right:1px solid var(--border); min-height:100vh; }
+  #modal-overlay, #pay-overlay { align-items:center; }
+  #modal-box, #pay-box { max-width:440px; border-radius:16px; }
 }
 </style>
 </head>
@@ -272,28 +260,14 @@ html { padding-top: env(safe-area-inset-top, 0); }
     <button class="mnav-btn" onclick="changeMonth(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg></button>
   </div>
   <div class="cgrid">
-    <div class="ccard ccard-inc">
-      <div class="cl">Income</div>
-      <div class="ca" id="d-inc">৳0</div>
-      <div class="cs" id="d-inc-ct">0 entries</div>
-    </div>
-    <div class="ccard ccard-exp">
-      <div class="cl">Expenses</div>
-      <div class="ca" id="d-exp">৳0</div>
-      <div class="cs" id="d-exp-ct">0 entries</div>
-    </div>
-    <div class="ccard ccard-bal">
-      <div class="cl">Net Balance</div>
-      <div class="ca" id="d-bal">৳0</div>
-      <div class="cs">Income minus expenses</div>
-    </div>
-    <div class="ccard ccard-sav">
-      <div class="cl">Savings Rate</div>
-      <div class="ca" id="d-sav">0%</div>
-      <div class="cs">of total income</div>
-    </div>
+    <div class="ccard ccard-inc"><div class="cl">Income</div><div class="ca" id="d-inc">৳0</div><div class="cs" id="d-inc-ct">0 entries</div></div>
+    <div class="ccard ccard-exp"><div class="cl">Expenses</div><div class="ca" id="d-exp">৳0</div><div class="cs" id="d-exp-ct">0 entries</div></div>
+    <div class="ccard ccard-bal"><div class="cl">Net Balance</div><div class="ca" id="d-bal">৳0</div><div class="cs">Income minus expenses</div></div>
+    <div class="ccard ccard-sav"><div class="cl">Savings Rate</div><div class="ca" id="d-sav">0%</div><div class="cs">of total income</div></div>
   </div>
-  <div class="sl">By Payment Source</div>
+  <div class="sl">Credit Card Balances</div>
+  <div class="acbars" id="d-cards"></div>
+  <div class="sl">Spending By Source</div>
   <div class="acbars" id="d-sources"></div>
   <div class="sl">By Category</div>
   <div class="cbars" id="d-cats"></div>
@@ -303,12 +277,7 @@ html { padding-top: env(safe-area-inset-top, 0); }
 
 <!-- ══════════════ INCOME ══════════════ -->
 <div id="sec-income" class="sec">
-  <div class="ph">
-    <div>
-      <div class="ph-eyebrow">Log</div>
-      <div class="ph-title">Income</div>
-    </div>
-  </div>
+  <div class="ph"><div><div class="ph-eyebrow">Log</div><div class="ph-title">Income</div></div></div>
   <div class="mnav">
     <button class="mnav-btn" onclick="changeMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="mlabel" id="inc-mlbl">—</div>
@@ -324,10 +293,7 @@ html { padding-top: env(safe-area-inset-top, 0); }
           <option value="Investment Returns"><option value="Bonus"><option value="Rental Income"><option value="Consulting">
         </datalist>
       </div>
-      <div class="fg">
-        <label class="fl">Amount (BDT)</label>
-        <input type="number" class="fi" id="ii-amount" placeholder="0" min="0">
-      </div>
+      <div class="fg"><label class="fl">Amount (BDT)</label><input type="number" class="fi" id="ii-amount" placeholder="0" min="0"></div>
     </div>
     <div class="fg">
       <label class="fl">Deposited To</label>
@@ -339,10 +305,7 @@ html { padding-top: env(safe-area-inset-top, 0); }
         <option value="cash">Cash</option>
       </select>
     </div>
-    <div class="fg">
-      <label class="fl">Note (optional)</label>
-      <input type="text" class="fi" id="ii-note" placeholder="Optional note">
-    </div>
+    <div class="fg"><label class="fl">Note (optional)</label><input type="text" class="fi" id="ii-note" placeholder="Optional note"></div>
     <button class="btn-add" onclick="addIncome()">+ Add Income</button>
   </div>
   <div class="div"></div>
@@ -352,31 +315,17 @@ html { padding-top: env(safe-area-inset-top, 0); }
 
 <!-- ══════════════ EXPENSES ══════════════ -->
 <div id="sec-expenses" class="sec">
-  <div class="ph">
-    <div>
-      <div class="ph-eyebrow">Log</div>
-      <div class="ph-title">Expenses</div>
-    </div>
-  </div>
+  <div class="ph"><div><div class="ph-eyebrow">Log</div><div class="ph-title">Expenses</div></div></div>
   <div class="mnav">
     <button class="mnav-btn" onclick="changeMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="mlabel" id="exp-mlbl">—</div>
     <button class="mnav-btn" onclick="changeMonth(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6"/></svg></button>
   </div>
   <div class="fwrap">
-    <div class="fg">
-      <label class="fl">Description</label>
-      <input type="text" class="fi" id="ei-desc" placeholder="What did you spend on?" autocomplete="off">
-    </div>
+    <div class="fg"><label class="fl">Description</label><input type="text" class="fi" id="ei-desc" placeholder="What did you spend on?" autocomplete="off"></div>
     <div class="frow">
-      <div class="fg">
-        <label class="fl">Amount (BDT)</label>
-        <input type="number" class="fi" id="ei-amount" placeholder="0" min="0">
-      </div>
-      <div class="fg">
-        <label class="fl">Date</label>
-        <input type="date" class="fi" id="ei-date">
-      </div>
+      <div class="fg"><label class="fl">Amount (BDT)</label><input type="number" class="fi" id="ei-amount" placeholder="0" min="0"></div>
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="ei-date"></div>
     </div>
     <div class="frow">
       <div class="fg">
@@ -417,12 +366,7 @@ html { padding-top: env(safe-area-inset-top, 0); }
 
 <!-- ══════════════ ACCOUNTS ══════════════ -->
 <div id="sec-accounts" class="sec">
-  <div class="ph">
-    <div>
-      <div class="ph-eyebrow">Overview</div>
-      <div class="ph-title">Accounts</div>
-    </div>
-  </div>
+  <div class="ph"><div><div class="ph-eyebrow">Overview</div><div class="ph-title">Accounts</div></div></div>
   <div class="mnav">
     <button class="mnav-btn" onclick="changeMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18l-6-6 6-6"/></svg></button>
     <div class="mlabel" id="acc-mlbl">—</div>
@@ -436,29 +380,19 @@ html { padding-top: env(safe-area-inset-top, 0); }
 
 <!-- ══════════════ REPORTS ══════════════ -->
 <div id="sec-reports" class="sec">
-  <div class="ph">
-    <div>
-      <div class="ph-eyebrow">Analytics</div>
-      <div class="ph-title">Reports</div>
-    </div>
-  </div>
-
+  <div class="ph"><div><div class="ph-eyebrow">Analytics</div><div class="ph-title">Reports</div></div></div>
   <div class="sl">6-Month View</div>
   <div style="padding:0 18px 6px; display:flex; gap:14px;">
     <span style="font-size:10px; color:var(--text3); display:flex; align-items:center; gap:5px;"><span style="display:inline-block;width:8px;height:8px;background:var(--green);border-radius:2px;opacity:0.65;"></span>Income</span>
     <span style="font-size:10px; color:var(--text3); display:flex; align-items:center; gap:5px;"><span style="display:inline-block;width:8px;height:8px;background:var(--red);border-radius:2px;opacity:0.65;"></span>Expenses</span>
   </div>
   <div class="mochrt" id="mo-chart"></div>
-
   <div class="sl" style="margin-top:6px;">All-Time Totals</div>
   <div class="cgrid" id="at-cards"></div>
-
   <div class="sl">Top Categories (All Time)</div>
   <div class="cbars" id="rep-cats"></div>
-
   <div class="sl" style="margin-top:2px;">Spending by Source (All Time)</div>
   <div class="cbars" id="rep-srcs"></div>
-
   <div class="sl" style="margin-top:2px;">Data Management</div>
   <div style="padding:0 18px 20px; display:flex; gap:8px;">
     <button onclick="exportData()" style="flex:1; padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--r-sm); color:var(--text2); font-family:var(--font-body); font-size:12px; font-weight:600; cursor:pointer; letter-spacing:0.04em; text-transform:uppercase;">↓ Export JSON</button>
@@ -469,7 +403,6 @@ html { padding-top: env(safe-area-inset-top, 0); }
 
 </div><!-- /content -->
 
-<!-- Bottom Nav -->
 <nav id="nav">
   <button class="nb active" onclick="switchTab('dashboard')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
@@ -508,18 +441,49 @@ html { padding-top: env(safe-area-inset-top, 0); }
   </div>
 </div>
 
+<!-- Payment Modal -->
+<div id="pay-overlay">
+  <div id="pay-box">
+    <div class="pay-modal-title">Pay <span id="pay-card-name">Card</span></div>
+    <div class="pay-modal-bal" id="pay-bal-line">Outstanding: ৳0</div>
+    <div class="fg"><label class="fl">Payment Amount (BDT)</label><input type="number" class="fi" id="pay-amount" placeholder="0" min="0"></div>
+    <div class="fg">
+      <label class="fl">Paid From</label>
+      <select class="fs" id="pay-from">
+        <option value="sc-bank">Standard Chartered (Bank)</option>
+        <option value="city">The City Bank</option>
+        <option value="brac">BRAC Bank</option>
+        <option value="cash">Cash</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="pay-date"></div>
+    <div class="fg"><label class="fl">Note (optional)</label><input type="text" class="fi" id="pay-note" placeholder="e.g. Monthly payment"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closePayModal()">Cancel</button>
+      <button class="modal-confirm" id="pay-confirm-btn" onclick="confirmPayment()" style="background:var(--green-dim);border-color:rgba(61,214,140,0.3);color:var(--green);">Confirm Payment</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════
-// DATA LAYER
+// DATA LAYER  (keeps existing data; adds payments)
 // ═══════════════════════════════════════════════════════════
 const STORE = 'fp_v2';
-
 function loadDB() {
-  try { const r = localStorage.getItem(STORE); if (r) return JSON.parse(r); } catch(e) {}
-  return { income: [], expenses: [] };
+  try {
+    const r = localStorage.getItem(STORE);
+    if (r) {
+      const d = JSON.parse(r);
+      d.income   = d.income   || [];
+      d.expenses = d.expenses || [];
+      d.payments = d.payments || [];
+      return d;
+    }
+  } catch(e) {}
+  return { income: [], expenses: [], payments: [] };
 }
 function saveDB() { localStorage.setItem(STORE, JSON.stringify(db)); }
-
 let db = loadDB();
 
 // ═══════════════════════════════════════════════════════════
@@ -541,6 +505,9 @@ const ACC = {
   'amex':    { name:'AMEX Gold',           short:'AMEX Gold',  type:'Credit Card',  dc:'d-amx', ac:'a-amx' },
   'cash':    { name:'Cash',                short:'Cash',       type:'Cash',         dc:'d-csh', ac:'a-csh' },
 };
+const BANK_KEYS = ['sc-bank','city','brac'];
+const CARD_KEYS = ['sc-card','amex'];
+const BORDER = {'sc-bank':'#4a9eff','city':'#ff7055','brac':'#3dd68c','sc-card':'#a78bfa','amex':'#fbbf24','cash':'#8080a0'};
 
 const CAT_ICO = {
   'Food & Dining':'🍽️','Transport':'🚗','Shopping':'🛍️',
@@ -560,6 +527,21 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,5
 const sum = (arr, f) => arr.reduce((s,x) => s+(parseFloat(x[f])||0), 0);
 const mInc = k => db.income.filter(i => i.month===k);
 const mExp = k => db.expenses.filter(e => e.month===k);
+const mPay = k => db.payments.filter(p => p.month===k);
+
+// Cumulative credit-card balance as of the selected month.
+// balance = (payments toward card) − (charges on card).  Negative = owed.
+const cardChargesUpto  = card => db.expenses.filter(e => e.paymentSource===card && e.month <= ck()).reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+const cardPaymentsUpto = card => db.payments.filter(p => p.card===card && p.month <= ck()).reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+const cardBalance = card => cardPaymentsUpto(card) - cardChargesUpto(card);
+
+function cardBalanceView(card) {
+  const bal = cardBalance(card);
+  const r = Math.round(bal);
+  if (r < 0)  return { disp:'−'+fmt(-bal), col:'var(--red)',   note:'Outstanding — you owe this' };
+  if (r === 0) return { disp:fmt(0),       col:'var(--green)', note:'Paid off' };
+  return { disp:'+'+fmt(bal), col:'var(--green)', note:'In credit' };
+}
 
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -569,18 +551,14 @@ function toast(msg) {
   t._t = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-let _modalCb = null;
+// Confirm modal
 function confirm2(title, msg, cb) {
   document.getElementById('modal-title').textContent = title;
   document.getElementById('modal-msg').textContent = msg;
-  _modalCb = cb;
   document.getElementById('modal-overlay').classList.add('open');
   document.getElementById('modal-confirm-btn').onclick = () => { closeModal(); cb(); };
 }
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  _modalCb = null;
-}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target === document.getElementById('modal-overlay')) closeModal(); });
 
 function changeMonth(d) {
@@ -611,7 +589,7 @@ function renderDashboard() {
   document.getElementById('dash-mlbl').textContent = `${MF[cM-1]} ${cY}`;
   document.getElementById('dash-date-badge').textContent = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 
-  const incs = mInc(k), exps = mExp(k);
+  const incs = mInc(k), exps = mExp(k), pays = mPay(k);
   const tI = sum(incs,'amount'), tE = sum(exps,'amount');
   const bal = tI - tE;
   const sav = tI > 0 ? Math.round(bal/tI*100) : 0;
@@ -623,41 +601,50 @@ function renderDashboard() {
   document.getElementById('d-bal').textContent = fmt(bal);
   document.getElementById('d-sav').textContent = sav + '%';
 
-  // Sources
-  const sEl = document.getElementById('d-sources');
+  // Credit card balances
+  document.getElementById('d-cards').innerHTML = CARD_KEYS.map(id => {
+    const a = ACC[id], v = cardBalanceView(id);
+    return `<div class="acbar">
+      <div class="acdot ${a.dc}"></div>
+      <div class="acinfo"><div class="acname">${a.name}</div><div class="actype">${v.note}</div></div>
+      <div class="acamt" style="color:${v.col};">${v.disp}</div>
+    </div>`;
+  }).join('');
+
+  // Spending by source
   let sH = '';
-  ['sc-bank','city','brac','sc-card','amex'].forEach(k2 => {
-    const spent = sum(exps.filter(e=>e.paymentSource===k2),'amount');
+  [...BANK_KEYS, ...CARD_KEYS].forEach(id => {
+    const spent = sum(exps.filter(e=>e.paymentSource===id),'amount');
     if (!spent) return;
-    const a = ACC[k2];
+    const a = ACC[id];
     sH += `<div class="acbar">
       <div class="acdot ${a.dc}"></div>
       <div class="acinfo"><div class="acname">${a.name}</div><div class="actype">${a.type}</div></div>
       <div class="acamt ${a.ac}">${fmt(spent)}</div>
     </div>`;
   });
-  sEl.innerHTML = sH || `<div class="empty"><div class="empty-txt">No spending logged yet.</div></div>`;
+  document.getElementById('d-sources').innerHTML = sH || `<div class="empty"><div class="empty-txt">No spending logged yet.</div></div>`;
 
   // Categories
-  const cEl = document.getElementById('d-cats');
   const cMap = {};
   exps.forEach(e => cMap[e.category] = (cMap[e.category]||0) + parseFloat(e.amount));
   const cSrt = Object.entries(cMap).sort((a,b)=>b[1]-a[1]);
   const cMax = cSrt.length ? cSrt[0][1] : 1;
-  cEl.innerHTML = cSrt.map(([c,v]) => `
+  document.getElementById('d-cats').innerHTML = cSrt.map(([c,v]) => `
     <div class="cbrow">
       <div class="cblbl">${CAT_ICO[c]||'📎'} ${c}</div>
       <div class="cbtrack"><div class="cbfill" style="width:${(v/cMax*100).toFixed(0)}%;background:var(--red);opacity:0.7;"></div></div>
       <div class="cbval">${fmt(v)}</div>
     </div>`).join('') || `<div style="padding-bottom:8px;color:var(--text3);font-size:12px;">No expenses yet.</div>`;
 
-  // Recent
-  const rEl = document.getElementById('d-recent');
+  // Recent activity (income + expenses + payments)
   const all = [
     ...incs.map(i=>({...i,_t:'inc',_s:i.month+'-01'})),
-    ...exps.map(e=>({...e,_t:'exp',_s:e.date}))
-  ].sort((a,b)=>new Date(b._s)-new Date(a._s)).slice(0,10);
+    ...exps.map(e=>({...e,_t:'exp',_s:e.date})),
+    ...pays.map(p=>({...p,_t:'pay',_s:p.date}))
+  ].sort((a,b)=>new Date(b._s)-new Date(a._s)).slice(0,12);
 
+  const rEl = document.getElementById('d-recent');
   if (!all.length) {
     rEl.innerHTML = `<div class="empty"><div class="empty-ico">📊</div><div class="empty-txt">No activity this month.<br>Start logging income or expenses.</div></div>`;
     return;
@@ -670,12 +657,19 @@ function renderDashboard() {
         <div class="txinfo"><div class="txdesc">${x.source}</div><div class="txmeta">${dest}${x.note?' · '+x.note:''}</div></div>
         <div class="txamt inc">+${fmt(x.amount)}</div>
       </div>`;
-    } else {
+    } else if (x._t==='exp') {
       const a = ACC[x.paymentSource];
       return `<div class="txitem">
         <div class="txicon">${CAT_ICO[x.category]||'📎'}</div>
         <div class="txinfo"><div class="txdesc">${x.description}</div><div class="txmeta">${x.category} · ${a?a.short:x.paymentSource}${x.date?' · '+x.date.slice(5):''}</div></div>
         <div class="txamt exp">-${fmt(x.amount)}</div>
+      </div>`;
+    } else {
+      const card = ACC[x.card], from = ACC[x.fromAccount];
+      return `<div class="txitem">
+        <div class="txicon">💳</div>
+        <div class="txinfo"><div class="txdesc">Payment → ${card?card.short:x.card}</div><div class="txmeta">from ${from?from.short:x.fromAccount}${x.date?' · '+x.date.slice(5):''}</div></div>
+        <div class="txamt pay">${fmt(x.amount)}</div>
       </div>`;
     }
   }).join('');
@@ -690,22 +684,13 @@ function renderIncome() {
   const incs = mInc(k);
   document.getElementById('inc-total').textContent = fmt(sum(incs,'amount'));
   const el = document.getElementById('inc-list');
-  if (!incs.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">💸</div><div class="empty-txt">No income logged for this month.</div></div>`;
-    return;
-  }
+  if (!incs.length) { el.innerHTML = `<div class="empty"><div class="empty-ico">💸</div><div class="empty-txt">No income logged for this month.</div></div>`; return; }
   el.innerHTML = [...incs].reverse().map(i => {
     const dest = i.dest ? (ACC[i.dest]?.name||i.dest) : '—';
     return `<div class="eitem">
       <div style="font-size:20px;margin-top:1px;">💰</div>
-      <div class="emain">
-        <div class="etitle">${i.source}</div>
-        <div class="esub">To: ${dest}${i.note?' · '+i.note:''}</div>
-      </div>
-      <div class="eright">
-        <div class="eamt inc">${fmt(i.amount)}</div>
-        <button class="btn-del" onclick="delIncome('${i.id}')">Delete</button>
-      </div>
+      <div class="emain"><div class="etitle">${i.source}</div><div class="esub">To: ${dest}${i.note?' · '+i.note:''}</div></div>
+      <div class="eright"><div class="eamt inc">${fmt(i.amount)}</div><button class="btn-del" onclick="delIncome('${i.id}')">Delete</button></div>
     </div>`;
   }).join('');
 }
@@ -719,23 +704,14 @@ function renderExpenses() {
   const exps = mExp(k);
   document.getElementById('exp-total').textContent = fmt(sum(exps,'amount'));
   const el = document.getElementById('exp-list');
-  if (!exps.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-ico">🧾</div><div class="empty-txt">No expenses logged for this month.</div></div>`;
-    return;
-  }
+  if (!exps.length) { el.innerHTML = `<div class="empty"><div class="empty-ico">🧾</div><div class="empty-txt">No expenses logged for this month.</div></div>`; return; }
   el.innerHTML = [...exps].reverse().map(e => {
     const a = ACC[e.paymentSource];
-    const dotHtml = a ? `<span class="acdot ${a.dc}" style="display:inline-block;vertical-align:middle;margin-right:3px;"></span>` : '';
+    const dot = a ? `<span class="acdot ${a.dc}" style="display:inline-block;vertical-align:middle;margin-right:3px;"></span>` : '';
     return `<div class="eitem">
       <div style="font-size:20px;margin-top:1px;">${CAT_ICO[e.category]||'📎'}</div>
-      <div class="emain">
-        <div class="etitle">${e.description}</div>
-        <div class="esub">${e.category} · ${dotHtml}${a?a.short:e.paymentSource}${e.date?' · '+e.date.slice(5):''}</div>
-      </div>
-      <div class="eright">
-        <div class="eamt exp">-${fmt(e.amount)}</div>
-        <button class="btn-del" onclick="delExpense('${e.id}')">Delete</button>
-      </div>
+      <div class="emain"><div class="etitle">${e.description}</div><div class="esub">${e.category} · ${dot}${a?a.short:e.paymentSource}${e.date?' · '+e.date.slice(5):''}</div></div>
+      <div class="eright"><div class="eamt exp">-${fmt(e.amount)}</div><button class="btn-del" onclick="delExpense('${e.id}')">Delete</button></div>
     </div>`;
   }).join('');
 }
@@ -746,50 +722,75 @@ function renderExpenses() {
 function renderAccounts() {
   document.getElementById('acc-mlbl').textContent = `${MF[cM-1]} ${cY}`;
   const k = ck();
-  const exps = mExp(k), incs = mInc(k);
+  const exps = mExp(k), incs = mInc(k), pays = mPay(k);
 
-  function mkCard(id) {
+  function bankCard(id) {
     const a = ACC[id];
-    const spent = sum(exps.filter(e=>e.paymentSource===id),'amount');
-    const recv  = sum(incs.filter(i=>i.dest===id),'amount');
-    const isCC  = a.type==='Credit Card';
-    const netFlow = recv - spent;
-    const borderColor = {
-      'sc-bank':'#4a9eff','city':'#ff7055','brac':'#3dd68c',
-      'sc-card':'#a78bfa','amex':'#fbbf24'
-    }[id] || '#8080a0';
-
-    return `<div class="accard" style="border-left:3px solid ${borderColor};">
+    const recv    = sum(incs.filter(i=>i.dest===id),'amount');
+    const spent   = sum(exps.filter(e=>e.paymentSource===id),'amount');
+    const toCards = sum(pays.filter(p=>p.fromAccount===id),'amount');
+    const net = recv - spent - toCards;
+    return `<div class="accard" style="border-left:3px solid ${BORDER[id]};">
       <div class="accard-head">
         <div><div class="accard-name">${a.name}</div><div class="accard-type">${a.type}</div></div>
         <div class="acdot ${a.dc}" style="width:10px;height:10px;margin-top:5px;"></div>
       </div>
       <div class="accard-grid">
-        ${!isCC ? `<div class="acstat">
-          <div class="acstat-lbl">Received</div>
-          <div class="acstat-val" style="color:var(--green);">${fmt(recv)}</div>
-        </div>` : ''}
-        <div class="acstat${isCC?' full':''}">
-          <div class="acstat-lbl">${isCC?'Total Charged':'Spent'}</div>
-          <div class="acstat-val" style="color:var(--red);">${fmt(spent)}</div>
-        </div>
-        ${!isCC ? `<div class="acstat full">
-          <div class="acstat-lbl">Net Flow</div>
-          <div class="acstat-val" style="color:${netFlow>=0?'var(--green)':'var(--red)'};">${fmtS(netFlow)}</div>
-        </div>` : ''}
+        <div class="acstat"><div class="acstat-lbl">Received</div><div class="acstat-val" style="color:var(--green);">${fmt(recv)}</div></div>
+        <div class="acstat"><div class="acstat-lbl">Spent</div><div class="acstat-val" style="color:var(--red);">${fmt(spent)}</div></div>
+        ${toCards>0?`<div class="acstat full"><div class="acstat-lbl">Card Payments Out</div><div class="acstat-val" style="color:var(--blue);">${fmt(toCards)}</div></div>`:''}
+        <div class="acstat full"><div class="acstat-lbl">Net Flow This Month</div><div class="acstat-val" style="color:${net>=0?'var(--green)':'var(--red)'};">${fmtS(net)}</div></div>
       </div>
     </div>`;
   }
 
-  document.getElementById('banks-view').innerHTML = ['sc-bank','city','brac'].map(mkCard).join('');
-  document.getElementById('cards-view').innerHTML  = ['sc-card','amex'].map(mkCard).join('');
+  function cardCard(id) {
+    const a = ACC[id];
+    const chargedMo = sum(exps.filter(e=>e.paymentSource===id),'amount');
+    const paidMo    = sum(pays.filter(p=>p.card===id),'amount');
+    const v = cardBalanceView(id);
+    const hist = db.payments.filter(p=>p.card===id).sort((x,y)=>(y.date||'').localeCompare(x.date||''));
+    const histHtml = hist.length
+      ? hist.slice(0,8).map(p=>{
+          const from = ACC[p.fromAccount];
+          return `<div class="pay-row">
+            <div class="pay-row-info">${p.date?p.date.slice(0,10):''} · from ${from?from.short:p.fromAccount}${p.note?' · '+p.note:''}</div>
+            <div class="pay-row-amt">${fmt(p.amount)}</div>
+            <button class="pay-row-del" onclick="delPayment('${p.id}')">✕</button>
+          </div>`;
+        }).join('')
+      : '<div style="font-size:11px;color:var(--text3);">No payments yet.</div>';
+
+    return `<div class="accard" style="border-left:3px solid ${BORDER[id]};">
+      <div class="accard-head">
+        <div><div class="accard-name">${a.name}</div><div class="accard-type">${a.type}</div></div>
+        <div class="acdot ${a.dc}" style="width:10px;height:10px;margin-top:5px;"></div>
+      </div>
+      <div class="cc-balance">
+        <div class="cc-balance-lbl">Current Balance</div>
+        <div class="cc-balance-val" style="color:${v.col};">${v.disp}</div>
+        <div class="cc-balance-note">${v.note}</div>
+      </div>
+      <div class="accard-grid">
+        <div class="acstat"><div class="acstat-lbl">Charged (this mo)</div><div class="acstat-val" style="color:var(--red);">${fmt(chargedMo)}</div></div>
+        <div class="acstat"><div class="acstat-lbl">Paid (this mo)</div><div class="acstat-val" style="color:var(--green);">${fmt(paidMo)}</div></div>
+      </div>
+      <button class="btn-pay" onclick="openPayModal('${id}')">+ Make Payment</button>
+      <div class="pay-hist">
+        <div class="pay-hist-lbl">Payment History</div>
+        ${histHtml}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('banks-view').innerHTML = BANK_KEYS.map(bankCard).join('');
+  document.getElementById('cards-view').innerHTML  = CARD_KEYS.map(cardCard).join('');
 }
 
 // ═══════════════════════════════════════════════════════════
 // RENDER — REPORTS
 // ═══════════════════════════════════════════════════════════
 function renderReports() {
-  // 6-month chart
   const months = [];
   let y=cY, m=cM;
   for(let i=0;i<6;i++) { months.unshift({y,m,lbl:MS[m-1]}); m--; if(m<1){m=12;y--;} }
@@ -809,13 +810,11 @@ function renderReports() {
     </div>`;
   }).join('');
 
-  // All-time cards
   const aI=sum(db.income,'amount'), aE=sum(db.expenses,'amount');
   document.getElementById('at-cards').innerHTML = `
     <div class="ccard ccard-inc"><div class="cl">All Income</div><div class="ca">${fmt(aI)}</div><div class="cs">${db.income.length} total entries</div></div>
     <div class="ccard ccard-exp"><div class="cl">All Expenses</div><div class="ca">${fmt(aE)}</div><div class="cs">${db.expenses.length} total entries</div></div>`;
 
-  // All-time cats
   const cmap={};
   db.expenses.forEach(e => cmap[e.category]=(cmap[e.category]||0)+parseFloat(e.amount));
   const cSrt=Object.entries(cmap).sort((a,b)=>b[1]-a[1]).slice(0,7);
@@ -827,7 +826,6 @@ function renderReports() {
       <div class="cbval">${fmt(v)}</div>
     </div>`).join('') || '<div style="color:var(--text3);font-size:12px;padding-bottom:8px;">No data.</div>';
 
-  // All-time sources
   const smap={};
   db.expenses.forEach(e => smap[e.paymentSource]=(smap[e.paymentSource]||0)+parseFloat(e.amount));
   const sSrt=Object.entries(smap).sort((a,b)=>b[1]-a[1]);
@@ -843,7 +841,7 @@ function renderReports() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// ADD / DELETE
+// ADD / DELETE — INCOME & EXPENSES
 // ═══════════════════════════════════════════════════════════
 function addIncome() {
   const source = document.getElementById('ii-source').value.trim();
@@ -871,9 +869,7 @@ function addExpense() {
   if (!desc)              { toast('Please enter a description'); return; }
   if (!amount||amount<=0) { toast('Please enter a valid amount'); return; }
   if (!date)              { toast('Please select a date'); return; }
-  // derive month from date
-  const month = date.slice(0,7);
-  db.expenses.push({ id:uid(), month, date, description:desc, category:cat, paymentSource:src, amount, at:Date.now() });
+  db.expenses.push({ id:uid(), month:date.slice(0,7), date, description:desc, category:cat, paymentSource:src, amount, at:Date.now() });
   saveDB();
   document.getElementById('ei-desc').value='';
   document.getElementById('ei-amount').value='';
@@ -889,12 +885,54 @@ function delIncome(id) {
     saveDB(); toast('Deleted'); renderAll();
   });
 }
-
 function delExpense(id) {
   const it = db.expenses.find(e=>e.id===id);
   if (!it) return;
   confirm2('Delete expense?', `${it.description} — ${fmt(it.amount)}`, () => {
     db.expenses = db.expenses.filter(e=>e.id!==id);
+    saveDB(); toast('Deleted'); renderAll();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CREDIT CARD PAYMENTS
+// ═══════════════════════════════════════════════════════════
+let _payCard = null;
+function openPayModal(card) {
+  _payCard = card;
+  const owed = -cardBalance(card); // positive = amount owed
+  const v = cardBalanceView(card);
+  document.getElementById('pay-card-name').textContent = ACC[card].name;
+  document.getElementById('pay-bal-line').textContent =
+    owed > 0 ? `Outstanding balance: ${fmt(owed)}` : (v.note);
+  document.getElementById('pay-amount').value = owed > 0 ? Math.round(owed) : '';
+  document.getElementById('pay-from').value = 'brac';
+  document.getElementById('pay-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('pay-note').value = '';
+  document.getElementById('pay-overlay').classList.add('open');
+}
+function closePayModal() { document.getElementById('pay-overlay').classList.remove('open'); _payCard=null; }
+document.getElementById('pay-overlay').addEventListener('click', e => { if(e.target === document.getElementById('pay-overlay')) closePayModal(); });
+
+function confirmPayment() {
+  if (!_payCard) return;
+  const amount = parseFloat(document.getElementById('pay-amount').value);
+  const from   = document.getElementById('pay-from').value;
+  const date   = document.getElementById('pay-date').value;
+  const note   = document.getElementById('pay-note').value.trim();
+  if (!amount || amount <= 0) { toast('Enter a valid amount'); return; }
+  if (!date) { toast('Select a date'); return; }
+  db.payments.push({ id:uid(), month:date.slice(0,7), date, card:_payCard, fromAccount:from, amount, note, at:Date.now() });
+  saveDB();
+  closePayModal();
+  toast('Payment recorded ✓');
+  renderAll();
+}
+function delPayment(id) {
+  const p = db.payments.find(x=>x.id===id);
+  if (!p) return;
+  confirm2('Delete payment?', `${ACC[p.card]?.name||p.card} — ${fmt(p.amount)}`, () => {
+    db.payments = db.payments.filter(x=>x.id!==id);
     saveDB(); toast('Deleted'); renderAll();
   });
 }
@@ -910,7 +948,6 @@ function exportData() {
   a.click(); URL.revokeObjectURL(url);
   toast('Backup exported ✓');
 }
-
 function importData(ev) {
   const f = ev.target.files[0]; if(!f) return;
   const r = new FileReader();
@@ -918,6 +955,7 @@ function importData(ev) {
     try {
       const imp = JSON.parse(e.target.result);
       if (imp.income!==undefined && imp.expenses!==undefined) {
+        imp.payments = imp.payments || [];
         db=imp; saveDB(); toast('Data imported ✓'); renderAll();
       } else { toast('Invalid file format'); }
     } catch { toast('Error reading file'); }
@@ -935,10 +973,7 @@ function renderAll() {
   renderAccounts();
   renderReports();
 }
-
-// Set today as default expense date
 document.getElementById('ei-date').value = now.toISOString().slice(0,10);
-
 renderAll();
 </script>
 </body>
